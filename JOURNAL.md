@@ -63,6 +63,31 @@ assert 0.0 <= score <= 1.0
 A `None`-text chunk should simply contribute no context (an empty string), the
 same as a missing key would.
 
+### Reproduction confirmed (2026-07-20)
+
+Reproduced locally against the fork's `main` before making any code change.
+Environment was intentionally minimal — the module only imports `re` (stdlib)
+and `structlog`, so no Docker, database, or heavy AI dependencies were needed:
+
+```
+python -m venv .venv
+.venv\Scripts\python -m pip install structlog
+.venv\Scripts\python -c "from rag.evaluator.faithfulness_checker import FaithfulnessChecker; print(FaithfulnessChecker().check('Knows Python.', [{'text': None}]))"
+```
+
+Observed crash (as expected):
+
+```
+File "rag/evaluator/faithfulness_checker.py", line 34, in check
+    context_text = " ".join([
+        chunk.get("text", "") for chunk in context_chunks
+    ])
+TypeError: sequence item 0: expected str instance, NoneType found
+```
+
+The `TypeError` originates at line 34, exactly where `chunk.get("text", "")`
+returns `None` for a present-but-null `text` key.
+
 ---
 
 ## Scope Reasoning (issue-fit checklist)
