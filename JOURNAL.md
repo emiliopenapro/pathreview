@@ -147,6 +147,20 @@ key missing, and key present but `None` — collapsing the last two to `""`.
 
 ## Week 8 — Reproduction & solution planning
 
+**Reproduction commit link:** https://github.com/emiliopenapro/pathreview/commit/d703768
+
+**Reproduction summary:** Ran the project's existing unit test
+`test_none_context_chunk_text` in a minimal `pytest` + `structlog` environment; it fails
+with `TypeError: sequence item 0: expected str instance, NoneType found` at
+`rag/evaluator/faithfulness_checker.py:34`, confirming the reported crash on `{"text": None}`.
+
+**PLAN.md link:** https://github.com/emiliopenapro/pathreview/blob/fix/153-faithfulness-none-context-text/PLAN.md
+
+**Walkthrough video (recommended):** _not recorded (optional / ungraded)_
+
+**Blockers or open questions:** None blocking. Note: 3 other tests in the file fail from a
+separate bug (issue #152, the ≥2-overlap threshold) — pre-existing and out of scope for #153.
+
 ### Reproduction via the failing unit test (2026-07-26)
 
 Reproduced the bug by running PathReview's own unit test for this checker, in a minimal
