@@ -10,7 +10,7 @@
 
 ---
 
-## Problem Summary (in my own words)
+## Problem Summary 
 
 The RAG faithfulness checker scores how well a piece of generated feedback is
 supported by the retrieved context chunks. Inside its `check()` method it builds
@@ -142,3 +142,37 @@ key missing, and key present but `None` — collapsing the last two to `""`.
 
 - **Branch:** `fix/153-faithfulness-none-context-text`
 - **Commit (Conventional Commits):** `fix(rag): handle None text in faithfulness context chunks`
+
+---
+
+## Week 8 — Reproduction & solution planning
+
+### Reproduction via the failing unit test (2026-07-26)
+
+Reproduced the bug by running PathReview's own unit test for this checker, in a minimal
+`pytest` + `structlog` virtualenv — no Docker and no full `[dev]` install needed, since the
+module imports only `re` (stdlib) and `structlog`:
+
+```
+python -m venv .venv
+.venv\Scripts\python -m pip install pytest structlog
+.venv\Scripts\python -m pytest tests/unit/test_faithfulness_checker.py -v -m unit
+```
+
+Result: **4 failed, 18 passed.** The target test fails with exactly the documented crash:
+
+```
+tests/unit/test_faithfulness_checker.py::TestFaithfulnessChecker::test_none_context_chunk_text FAILED
+...
+E   TypeError: sequence item 0: expected str instance, NoneType found
+rag\evaluator\faithfulness_checker.py:34: TypeError
+```
+
+**Important finding — 3 of the 4 failures are NOT #153.**
+`test_partial_support_returns_middle_score`, `test_multiple_context_chunks`, and
+`test_multiple_claims_varying_support` fail independently because `_is_supported()` requires
+≥2 overlapping tokens, so single-keyword matches score `0.0`. That is a *separate* bug —
+issue #152 ("Faithfulness checker can never mark short claims as supported") — and is **out
+of scope** for this contribution. Only `test_none_context_chunk_text` belongs to #153. This
+shapes the Definition of Done (see `PLAN.md` → Risks): fix the one test without introducing
+new failures, and leave the pre-existing #152 failures alone.
