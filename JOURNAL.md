@@ -213,7 +213,7 @@ description against the repo template, and open the PR.
 
 ### Check-in 2 (end of week)
 
-**PR link:** <PASTE YOUR PR URL HERE AFTER OPENING IT>
+**PR link:** https://github.com/ascherj/pathreview/pull/713
 
 **Branch:** `fix/153-handle-none-context-text` (clean PR branch; course docs live on
 `fix/153-faithfulness-none-context-text`)
