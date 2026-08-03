@@ -190,3 +190,48 @@ issue #152 ("Faithfulness checker can never mark short claims as supported") —
 of scope** for this contribution. Only `test_none_context_chunk_text` belongs to #153. This
 shapes the Definition of Done (see `PLAN.md` → Risks): fix the one test without introducing
 new failures, and leave the pre-existing #152 failures alone.
+
+---
+
+## Week 9 — Solution building & PR submission
+
+### Check-in 1 (mid-week)
+
+**Current progress:** Implemented the fix from PLAN.md on a clean PR branch cut from
+`upstream/main` (so the PR diff contains only the change, not my course docs). The one-line
+fix in `rag/evaluator/faithfulness_checker.py` coalesces a `None`/absent `text` to `""`
+(`chunk.get("text") or ""`). Added two edge-case unit tests (mixed valid+`None`, all-`None`).
+Sub-tasks 1–3 from PLAN.md are done; the target `test_none_context_chunk_text` now passes.
+
+**Next steps:** Run the full self-review (`ruff`/`black`/`mypy`/`pytest`), write the PR
+description against the repo template, and open the PR.
+
+**Blockers:** None. (`make` isn't available on Windows, so I ran the underlying
+`ruff`/`black`/`mypy`/`pytest` commands directly — equivalent to the `make` targets.)
+
+---
+
+### Check-in 2 (end of week)
+
+**PR link:** <PASTE YOUR PR URL HERE AFTER OPENING IT>
+
+**Branch:** `fix/153-handle-none-context-text` (clean PR branch; course docs live on
+`fix/153-faithfulness-none-context-text`)
+
+**What you built:** `FaithfulnessChecker.check()` no longer crashes on a context chunk with
+`{"text": None}`. The context is now built with `(chunk.get("text") or "")`, so a null chunk
+contributes an empty string — identical to how a missing `text` key was already handled — and
+`check()` returns a valid score instead of raising `TypeError`.
+
+**Tests added or updated:** `tests/unit/test_faithfulness_checker.py` — added
+`test_mixed_valid_and_none_chunk_text` and `test_all_none_context_chunks`; the pre-existing
+`test_none_context_chunk_text` now passes.
+
+**Self-review confirmation:**
+- [x] make check passes — *no new failures vs. baseline (repo has 182 ruff / 52 black / 5 mypy
+  pre-existing errors, all unrelated and documented in the PR)*
+- [x] make test-unit passes — *unit suite went 53 failed/375 passed → 52 failed/378 passed:
+  one failure fixed, two new passing tests, zero new failures. Remaining failures are
+  pre-existing (incl. the #152 trio)*
+
+**Draft PR feedback received from:** none (opened at submission time)
