@@ -235,3 +235,72 @@ contributes an empty string — identical to how a missing `text` key was alread
   pre-existing (incl. the #152 trio)*
 
 **Draft PR feedback received from:** none (opened at submission time)
+
+---
+
+## Week 10 — Iteration & reflection
+
+### Reviewer feedback
+
+**Feedback received:**
+- [ ] Yes
+- [x] No — still awaiting review
+
+**Summary of feedback:** No reviewer or maintainer comments came in on
+[PR #713](https://github.com/ascherj/pathreview/pull/713) before the module ended — it is
+still open and unreviewed (consistent with reviewer feedback not being provided this term).
+
+**How you responded:** N/A — no feedback to respond to. The PR remains open and ready for
+review, with a description that documents the change, the testing, and the pre-existing
+failures unrelated to it.
+
+---
+
+### Reflection
+
+**What was harder than you expected?**
+The git and branch workflow, and trusting unfamiliar code — more than the actual fix, which
+was one line. Early on I committed my Week 7 work to `main` instead of a dedicated working
+branch, and only caught it from the Week 8 course docs, which say the grader reads the
+`/tree/<branch>` link, not `main`. Fixing that meant consolidating the branch and then, in
+Week 9, maintaining *two* branches on purpose: a course branch that carries my JOURNAL/PLAN,
+and a separate clean PR branch cut from `upstream/main` so the pull request diff wouldn't leak
+my course docs. Reading the code was the other surprise: the issue implied one failing test,
+but running the suite showed four failing. I had to trace `_is_supported()` to learn that
+three of them were a *different* bug (#152, the ≥2-token-overlap threshold), not mine.
+
+**What did you learn about working in a large codebase?**
+That contributing to someone else's production code means inheriting their conventions and
+their existing mess. On a clean checkout this repo already had 182 lint errors, 52
+unformatted files, and 53 failing unit tests — so "the checks pass" can't mean a clean run; it
+has to mean "my change introduces no *new* failures." The habit that made this manageable was
+capturing a baseline before touching anything, keeping the diff tiny (2 files, 31 insertions),
+matching the existing test style instead of imposing my own, and documenting the pre-existing
+failures in the PR rather than trying to fix the whole codebase. In my own projects I'd never
+had to separate "my breakage" from "pre-existing breakage" so deliberately.
+
+**How did AI tools help — and where did they fall short?**
+Candidly: the AI drove most of the hands-on execution — cloning, the git surgery, running the
+toolchain, writing the fix and the tests, drafting the docs — while I directed. I chose the
+issue, approved the plan before any code was written, set the scope, and made the judgment
+calls (avoid Docker, stop OneDrive from syncing the repo, keep the PR clean). Where it fell
+short was real-world/process judgment: it needed my steering to untangle the OneDrive sync
+problem (we ended up using a directory junction), and the key workflow insight — that *all*
+graded work has to live on the `/tree/<branch>`, not `main` — came from me reading the course
+material, not from the tool. AI was strong at execution and pattern-matching and weak at the
+human context it wasn't given.
+
+**What would you do differently if you started over?**
+Set the working branch up correctly on Day 1: create `fix/153-...` first and put `JOURNAL.md`
+on it immediately, instead of committing to `main` and having to consolidate later. I'd also
+decide the clean-PR-branch-vs-course-docs-branch split up front, since that tension was
+predictable and I only resolved it in Week 9. And I'd run the full `[dev]` install early to
+de-risk the environment rather than carrying a "will Python 3.14 break the install?" worry for
+three weeks — it turned out to install fine.
+
+**What are you most proud of?**
+The discipline of the process, not the one-line diff. I planned before coding and reproduced
+before fixing: a real plan (`PLAN.md`) approved before a single line of the fix existed, the
+crash reproduced with an actual failing test first, and only then a minimal, tested change.
+That sequence is exactly what caught the #152 trap and kept the PR clean and in-scope —
+instead of vibe-coding something that merely "works on my machine."
